@@ -52,4 +52,12 @@ class GhrStamm extends FirebirdModel
     {
         static::$barcodeColumn = $columnName;
     }
+
+    /**
+     * Gibt alle zugehörigen Prüfungen (aus GHR_PRUEF) zurück
+     */
+    public static function getPruefungen(string $ghrIndex): array
+    {
+        return GhrPruef::forGhr($ghrIndex);
+    }
 }

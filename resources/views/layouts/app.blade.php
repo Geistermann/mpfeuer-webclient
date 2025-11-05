@@ -10,9 +10,8 @@
   <nav class="bg-white shadow p-4">
     <div class="container mx-auto flex items-center justify-between">
       <div class="text-xl font-bold">MPFeuer-WebClient</div>
-      <div class="space-x-4">
-        <a href="{{ route('firebird.ghr.index') }}" class="px-3 py-2 bg-blue-600 text-white rounded shadow hover:opacity-90">GHR_STAMM</a>
-        <a href="/barcode-search" class="px-3 py-2 bg-blue-600 text-white rounded shadow hover:opacity-90">Barcode Suche</a>
+      <div class="space-x-4">        
+        <a href="/barcode" class="px-3 py-2 bg-blue-600 text-white rounded shadow hover:opacity-90">Barcode/NFC-Suche</a>
         <!-- weitere Menüpunkte für andere Modelle hier -->
       </div>
     </div>
