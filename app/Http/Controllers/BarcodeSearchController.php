@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Firebird\GhrStamm;
 use App\Models\Firebird\KldStamm;
+use App\Models\Firebird\GasStamm;
+use App\Models\Firebird\GelStamm;
 use App\Models\Firebird\GhrPruef;
 use Illuminate\Support\Facades\DB;
 
@@ -47,6 +49,8 @@ class BarcodeSearchController extends Controller
         $models = [
             GhrStamm::class,
             KldStamm::class,
+            GasStamm::class,
+            GelStamm::class,
         ];
 
         $results = [];
@@ -66,30 +70,5 @@ class BarcodeSearchController extends Controller
         }
 
         return view('barcode.results', compact('barcode', 'results', 'allPruefungen'));
-    }
-
-    /**
-     * Markiert eine Prüfung als erledigt
-     */
-    /*public function markDone(Request $request, $id)
-    {
-        $request->validate([
-            'handzeichen' => 'required|string|max:10',
-        ]);
-
-        $handzeichen = strtoupper(trim($request->input('handzeichen')));
-
-        try {
-            DB::connection('firebird')->update("
-                UPDATE GHR_PRUEF 
-                SET GHR_PRUEF_HDZ = ?, 
-                    GHR_PRUEF_OK = 1 
-                WHERE GHR_ID = ?
-            ", [$handzeichen, $id]);
-
-            return back()->with('success', 'Prüfung erfolgreich erledigt.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Fehler beim Aktualisieren der Prüfung: ' . $e->getMessage());
-        }
-    }*/
+    }    
 }

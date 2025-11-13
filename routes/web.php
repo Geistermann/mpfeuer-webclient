@@ -24,6 +24,10 @@ Route::get('/nfc/search/{token}', [NfcSearchController::class, 'search'])->name(
 Route::post('/pruefung/{id}/done', [PruefController::class, 'markAsDone'])->name('pruefung.done');
 */
 
+Route::get('/', function () {
+    return redirect()->route('barcode.index');
+});
+
 // Manuelle Eingabe über Formular
 Route::get('/barcode', [BarcodeSearchController::class, 'index'])->name('barcode.index');
 
@@ -35,3 +39,5 @@ Route::get('/nfc/search/{token}', [BarcodeSearchController::class, 'searchByToke
 
 // Prüfung erledigen
 Route::post('/pruefung/{id}/done', [PruefController::class, 'markAsDone'])->name('pruefung.done');
+// Prüfungen erstellen
+Route::post('/pruefung/store', [PruefController::class, 'store'])->name('pruefung.store');

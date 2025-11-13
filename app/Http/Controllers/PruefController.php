@@ -32,4 +32,41 @@ class PruefController extends Controller
             ->back()
             ->with('error', 'Aktualisierung fehlgeschlagen.');
     }
+
+    /**
+     * Formular zum Erstellen einer neuen Prüfung anzeigen (optional separat)
+     */
+    public function create($ghrIndex)
+    {
+        $availablePruefungen = GhrPruef::getAvailablePruefungen();
+        return view('pruef_create', compact('availablePruefungen', 'ghrIndex'));
+    }
+
+    /**
+     * Neue Prüfung speichern
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'ghr_index' => 'required|string',            
+            'par_pruef_id' => 'required|string',            
+            'handzeichen' => 'required|string|max:7',
+        ]);
+
+        $success = GhrPruef::createNewPruefung(
+            $request->input('ghr_index'),            
+            $request->input('par_pruef_id'),            
+            $request->input('handzeichen')
+        );
+
+        if ($success) {
+            return redirect()
+                ->route('barcode.index')
+                ->with('success', '✅ Neue Prüfung wurde erfolgreich hinzugefügt.');
+        }
+
+        return redirect()
+            ->back()
+            ->with('error', '❌ Neue Prüfung konnte nicht angelegt werden.');
+    }
 }

@@ -4,11 +4,10 @@ namespace App\Models\Firebird;
 
 use PDO;
 
-class GhrStamm extends FirebirdModel
+class GasStamm extends FirebirdModel
 {        
-    protected static string $table = 'GHR_STAMM';
-    protected static string $barcodeColumn = 'GHR_BARCODE_NR';
-    protected static $friendlyName = 'Gerät (SRHT)'; 
+    protected static string $table = 'GAS_STAMM';
+    protected static string $barcodeColumn = 'GAS_BARCODE_NR';
     
     public static function all()
     {
@@ -22,11 +21,6 @@ class GhrStamm extends FirebirdModel
         $pdo = static::getConnection();
         $stmt = $pdo->query('SELECT FIRST 1 * FROM ' . static::$table);
         return $stmt->fetch();
-    }
-
-    public static function getFriendlyName()
-    {
-        return static::$friendlyName;
     }
 
     /**
@@ -64,6 +58,6 @@ class GhrStamm extends FirebirdModel
      */
     public static function getPruefungen(string $ghrIndex): array
     {
-        return GhrPruef::forGhr($ghrIndex);
+        //return GhrPruef::forGhr($ghrIndex);
     }
 }
