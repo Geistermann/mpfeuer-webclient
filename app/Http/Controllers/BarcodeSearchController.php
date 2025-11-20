@@ -8,6 +8,7 @@ use App\Models\Firebird\KldStamm;
 use App\Models\Firebird\GasStamm;
 use App\Models\Firebird\GelStamm;
 use App\Models\Firebird\GhrPruef;
+use App\Models\Firebird\ModuleRegistry;
 use Illuminate\Support\Facades\DB;
 
 class BarcodeSearchController extends Controller
@@ -23,13 +24,9 @@ class BarcodeSearchController extends Controller
     /**
      * Führt die manuelle Suche aus
      */
-    public function search(Request $request)
+    public function searchByUserInput(Request $request)
     {
-        $request->validate([
-            'barcode' => 'required|string',
-        ]);
-
-        $barcode = trim($request->input('barcode'));
+        $barcode = $request->input('barcode');
         return $this->performSearch($barcode);
     }
 
@@ -45,30 +42,20 @@ class BarcodeSearchController extends Controller
      * Interne Suchlogik, die bei beiden Varianten verwendet wird
      */
     private function performSearch($barcode)
-    {
-        $models = [
-            GhrStamm::class,
-            KldStamm::class,
-            GasStamm::class,
-            GelStamm::class,
-        ];
+    {        
+        $results = [];                
 
-        $results = [];
-        $allPruefungen = [];
+        foreach (ModuleRegistry::getStammModels() as $model) {
 
-        foreach ($models as $modelClass) {
-            $item = $modelClass::findByBarcode($barcode);
-            if ($item) {
-                $results[$modelClass] = $item;
+            if ($item = $model::findByBarcode($barcode)) {
+                $results[$model] = $item;
 
-                // Wenn GhrStamm → zugehörige Prüfungen laden
-                if ($modelClass === GhrStamm::class && isset($item->GHR_ID)) {
-                    $pruefungen = GhrPruef::forGhr($item->GHR_ID);
-                    $allPruefungen = array_merge($allPruefungen, $pruefungen);
-                }
+                // global sichern
+                session(['current_record' => $item]);
+                session(['current_model' => $model]);                
             }
         }
 
-        return view('barcode.results', compact('barcode', 'results', 'allPruefungen'));
-    }    
+        return view('barcode.results', compact('results', 'barcode'));
+    }  
 }

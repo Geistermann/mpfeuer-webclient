@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Firebird\GhrPruef;
+use App\Models\Pruef\BasePruef;
+use App\Models\Firebird\ModuleRegistry;
+use Illuminate\Support\Facades\Session;
 
 class PruefController extends Controller
 {
     /**
      * Prüfung als erledigt markieren
      */
-    public function markAsDone(Request $request, $id)
-    {
+    public function markAsDone(Request $request, $pruef_id)
+    {                        
         $handzeichen = $request->input('handzeichen');
 
         if (empty($handzeichen)) {
@@ -20,7 +22,15 @@ class PruefController extends Controller
                 ->with('error', 'Kein Handzeichen angegeben.');
         }
 
-        $success = GhrPruef::markAsDone($id, $handzeichen);
+        $pruefModel = $request->input('pruefModel');
+
+        if (empty($pruefModel)) {
+            return redirect()
+                ->back()
+                ->with('error', 'Kein Pruef Model gefunden.');
+        }        
+
+        $success = $pruefModel::markAsDone($pruef_id, $handzeichen);
 
         if ($success) {
             return redirect()
@@ -34,28 +44,28 @@ class PruefController extends Controller
     }
 
     /**
-     * Formular zum Erstellen einer neuen Prüfung anzeigen (optional separat)
-     */
-    public function create($ghrIndex)
-    {
-        $availablePruefungen = GhrPruef::getAvailablePruefungen();
-        return view('pruef_create', compact('availablePruefungen', 'ghrIndex'));
-    }
-
-    /**
      * Neue Prüfung speichern
      */
     public function store(Request $request)
     {
         $request->validate([
-            'ghr_index' => 'required|string',            
-            'par_pruef_id' => 'required|string',            
+            'item_id' => 'required|string',
+            'module' => 'required|string',
+            'pruefModel' => 'required|string',            
+            'par_pruef_lang' => 'required|string',            
             'handzeichen' => 'required|string|max:7',
         ]);
 
-        $success = GhrPruef::createNewPruefung(
-            $request->input('ghr_index'),            
-            $request->input('par_pruef_id'),            
+        $pruefModel = $request->input('pruefModel');
+        if (!$pruefModel) {
+            return back()->with('error', 'Konnte Prüftabelle für das Modul nicht finden.');
+        }
+
+        $success = $pruefModel::createNewPruefung(
+            $request->input('module'),
+            $request->input('pruefModel'),
+            $request->input('item_id'),            
+            $request->input('par_pruef_lang'),            
             $request->input('handzeichen')
         );
 
