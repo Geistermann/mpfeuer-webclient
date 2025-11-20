@@ -1,61 +1,238 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🔥 MPFeuer WebClient – Firebird Barcode & Prüfungsverwaltung
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Ein Laravel-basiertes Websystem zur Verwaltung von Geräten und deren vorgeschriebenen Prüfungen in MPFeuer-Umgebungen.
+Barcode- oder NFC-Tags können gescannt werden, um automatisch Geräte zu finden und fällige Prüfungen durchzuführen.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📌 Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🔍 **Barcode- & NFC-Suche**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+* Manuelle Suche über Eingabefeld (`/barcode`)
+* Automatische Suche über URL-Token (`/nfc/search/{token}`)
+* Dynamische Anzeige aller gefundenen Datensätze (aus allen Modulen)
 
-## Learning Laravel
+### 🧩 **Modulare Architektur**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Das System erkennt automatisch:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* alle Stamm-Modelle (z. B. `GhrStamm`, `GasStamm`, `KldStamm`, `GelStamm`)
+* die zugehörigen Prüf-Modelle (z. B. `GhrPruef`, `GasPruef` usw.)
 
-## Laravel Sponsors
+Diese befinden sich in:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```
+app/Models/Stamm/
+app/Models/Pruef/
+```
 
-### Premium Partners
+Die Zuordnung erfolgt dynamisch über die **ModuleRegistry**.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 🗂 **Dynamische Darstellungen**
 
-## Contributing
+* Modulname, Friendly-Name, Tabellenfelder werden dynamisch ausgewertet
+* Views sind universell und funktionieren für jedes Modul gleich
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 📝 **Prüfungsverwaltung**
 
-## Code of Conduct
+* Anzeige aller vorhandenen Prüfungen (erledigt, offen, zukünftige)
+* Direktes Erledigen einer Prüfung über Button
+* Erstellen neuer Prüfungen über Dropdown
+  → basierend auf Tabelle `PAR_PRUEF` (modulspezifisch)
+* Automatische Generierung von GUID-ähnlichen UUIDs
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 🗄 **Firebird-Integration**
 
-## Security Vulnerabilities
+* Direkte PDO-Anbindung über ein Firebird-Basismodell
+* Alle Modelle erben dynamische Connection-Logik
+* `.env`-basierte Konfiguration:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+FIREBIRD_HOST=x.x.x.x
+FIREBIRD_PORT=3050
+FIREBIRD_DB_PATH="C:/.../DATA.FDB"
+FIREBIRD_USERNAME=SYSDBA
+FIREBIRD_PASSWORD=xxxx
+FIREBIRD_CHARSET=UTF8
+```
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# mpfeuer-webclient
-# mpfeuer-webclient
+## 📁 Projektstruktur
+
+```
+app/
+ ├─ Models/
+ │   ├─ Stamm/        → Geräte-Stammdaten (GhrStamm, KldStamm, …)
+ │   ├─ Pruef/        → Prüfungsdaten (GhrPruef, KldPruef, …)
+ │   └─ Firebird/     → Basismodelle für DB-Zugriff
+ ├─ Http/
+ │   ├─ Controllers/
+ │   │   ├─ BarcodeSearchController   → für manuelle Suche
+ │   │   ├─ NfcSearchController       → für NFC-URL-Suche
+ │   │   └─ PruefController           → Anlegen & Erledigen von Prüfungen
+ │   └─ Middleware/
+ └─ Services/
+     └─ ModuleRegistry.php            → automatische Modulerkennung
+     
+resources/
+ └─ views/
+     ├─ barcode.blade.php
+     ├─ results.blade.php
+     └─ layouts/
+```
+
+---
+
+## ⚙️ Installation
+
+### 1️⃣ Repository klonen
+
+```bash
+git clone https://github.com/DEIN_USER/DEIN_REPO.git
+cd DEIN_REPO
+```
+
+### 2️⃣ Abhängigkeiten installieren
+
+```bash
+composer install
+npm install && npm run build
+```
+
+### 3️⃣ Environment konfigurieren
+
+```bash
+cp .env.example .env
+```
+
+Firebird-Einträge ergänzen:
+
+```
+FIREBIRD_HOST=192.168.x.x
+FIREBIRD_PORT=3050
+FIREBIRD_DB_PATH="C:/.../DATA.FDB"
+FIREBIRD_USERNAME=SYSDBA
+FIREBIRD_PASSWORD=masterkey
+FIREBIRD_CHARSET=UTF8
+```
+
+### 4️⃣ App-Key generieren
+
+```bash
+php artisan key:generate
+```
+
+### 5️⃣ Berechtigungen setzen (Linux)
+
+```bash
+chmod -R 775 storage bootstrap/cache
+```
+
+---
+
+## 🧠 Architektur & Funktionsweise
+
+### 🔌 1. Firebird-Connection
+
+Alle Modelle, die direkt mit Firebird arbeiten, erben:
+
+```
+App\Models\Firebird\FirebirdModel
+```
+
+Diese stellt automatisch eine PDO-Verbindung her.
+
+### 🧩 2. ModuleRegistry
+
+Erkennt dynamisch alle aktiven Module:
+
+* durchsucht `app/Models/Stamm` nach Klassen
+* bildet automatisch Prüftabellen aus `app/Models/Pruef` zu
+* stellt Friendly Names bereit (z. B. „Gerät (SRHT)“)
+
+### 🔎 3. Suche
+
+Beide Controller (Barcode & NFC) nutzen dieselbe Registry:
+
+```php
+$models = ModuleRegistry::getStammModels();
+```
+
+### 📋 4. Ergebnisanzeige
+
+In `results.blade.php` wird dynamisch angezeigt:
+
+* Stammdaten
+* vorhandene Prüfungen
+* offene Prüfungen (rot markiert)
+* zukünftige geplante Prüfungen (gelb)
+* erledigte Prüfungen (grün)
+* Formular zur Erstellung neuer Prüfungen
+
+---
+
+## 🛠 Prüfungen erstellen
+
+Auf Basis der Tabelle `PAR_PRUEF` (modulspezifisch):
+
+* Dropdown listet alle Prüfungen aus `PAR_MODUL = <Modul>`
+* ID wird automatisch als UUID generiert
+* Speichern erfolgt über `PruefController@createPruefung`
+
+---
+
+## ✔ Prüfung erledigen
+
+Eine Prüfung gilt als erledigt, wenn:
+
+```
+*_PRUEF_HDZ ≠ leer
+*_PRUEF_OK  = 1
+```
+
+Nach dem Speichern erfolgt:
+
+* JSON-Response
+* Success-Nachricht
+* automatische Weiterleitung zurück auf `/barcode`
+
+---
+
+## 🧪 Entwicklung & Debugging
+
+### Logfiles anzeigen
+
+```bash
+tail -f storage/logs/laravel.log
+```
+
+### Manuelle Firebird-Tests
+
+```php
+dd(\DB::connection('firebird')->select('SELECT * FROM GHR_STAMM'));
+```
+
+---
+
+## 📄 Lizenz
+
+MIT-Lizenz oder nach Wunsch anpassbar.
+
+---
+
+## 🤝 Mitwirken
+
+Pull Requests sind willkommen!
+Für große Änderungen bitte erst ein Issue öffnen.
+
+---
+
+Wenn du willst, kann ich dir auch:
+
+✅ ein GitHub-Repository vorbereiten
+✅ eine DEV-/PROD-Konfiguration erstellen
+✅ CI/CD Workflow (GitHub Actions) hinzufügen
+
+Sag einfach Bescheid!
