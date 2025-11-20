@@ -70,7 +70,6 @@ app/
  ├─ Http/
  │   ├─ Controllers/
  │   │   ├─ BarcodeSearchController   → für manuelle Suche
- │   │   ├─ NfcSearchController       → für NFC-URL-Suche
  │   │   └─ PruefController           → Anlegen & Erledigen von Prüfungen
  │   └─ Middleware/
  └─ Services/
@@ -226,13 +225,3 @@ MIT-Lizenz oder nach Wunsch anpassbar.
 
 Pull Requests sind willkommen!
 Für große Änderungen bitte erst ein Issue öffnen.
-
----
-
-Wenn du willst, kann ich dir auch:
-
-✅ ein GitHub-Repository vorbereiten
-✅ eine DEV-/PROD-Konfiguration erstellen
-✅ CI/CD Workflow (GitHub Actions) hinzufügen
-
-Sag einfach Bescheid!
