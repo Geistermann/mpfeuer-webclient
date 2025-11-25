@@ -24,7 +24,7 @@
         @csrf
         <div>
             <label class="block font-medium mb-1">Barcode oder NFC-Tag eingeben:</label>
-            <input type="text" name="barcode" class="w-full border rounded p-2" placeholder="z.B. 123456789ABC" required>
+            <input type="text" name="barcode" class="w-full border rounded p-2 text-gray-900 text-4xl" placeholder="z.B. ABC1234" required oninput="this.value = this.value.toUpperCase()">
         </div>
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700">
             Suchen
