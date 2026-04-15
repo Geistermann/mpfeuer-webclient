@@ -39,9 +39,42 @@
                 } else {
                     $pruefungen = [];
                 }
-            @endphp            
+                
+                // Logik für die Archiv-Prüfung
+                $archivDatumKey = $module . '_ARCHIV_DAT';
+                $archivHdzKey = $module . '_ARCHIV_HDZ';
 
-            <div class="bg-gray-800 rounded-2xl shadow mb-6 border border-gray-600">
+                // Prüfung auf Inhalt
+                $hasArchivData = !empty($item->{$archivDatumKey}) && !empty($item->{$archivHdzKey});
+                
+                // Datum formatieren, falls vorhanden
+                $formatiertesDatum = null;
+                if ($hasArchivData) {
+                    try {
+                        // Carbon versucht das Datum zu parsen und in das deutsche Format zu bringen
+                        $formatiertesDatum = \Carbon\Carbon::parse($item->{$archivDatumKey})->format('d.m.Y');
+                    } catch (\Exception $e) {
+                        // Fallback, falls das Datumsformat in der DB korrupt ist
+                        $formatiertesDatum = $item->{$archivDatumKey};
+                    }
+                }    
+                
+                // Logik für die Zuteilung-Prüfung
+                $zuteilungDatumKey = $module . '_ZUTEIL_DAT';
+                $zuteilungNameKey = $module . '_ZUTEIL_NAME';
+
+                // Prüfung auf Zuteilung
+                $hasZuteilung = !empty($item->{$zuteilungNameKey}) && !empty($item->{$zuteilungDatumKey});
+            @endphp      
+            
+            {{-- Anzeige der Warnung wenn Datensatz archiviert ist --}}
+            @if($hasArchivData)
+                <p class="text-2xl mb-4 bg-red-700 py-1 px-2 rounded">
+                    <strong>Achtung:</strong> Dieser Datensatz wurde am {{ $formatiertesDatum }} von {{ $item->{$archivHdzKey} }} archiviert.
+                </p>
+            @endif            
+
+            <div class="bg-gray-800 rounded-2xl shadow mb-6 border border-gray-600">                
                 <div class="p-4 border-b border-gray-200 flex items-center justify-between cursor-pointer" 
                     onclick="toggleSection('details-{{ $loop->index }}')">
                     <h2 class="text-lg font-semibold text-gray-200">
@@ -62,8 +95,39 @@
                     </table>
                 </div>
 
+                {{-- ZUTEILUNG – standardmäßig geöffnet, wenn sichtbar --}}
+                @if($hasZuteilung)
+                    <div class="p-4 border-t border-gray-200">
+                        <div class="flex items-center justify-between mb-2 cursor-pointer" onclick="toggleSection('zuteilung-{{ $loop->index }}')">
+                            <h3 class="text-lg font-semibold text-gray-200">Zuteilung</h3>
+                            <span class="text-gray-500 text-sm">(Klicken zum Ein-/Ausklappen)</span>
+                        </div>
+                                            
+                        <div id="zuteilung-{{ $loop->index }}" class="block">
+                            <table class="responsive-table table-auto w-full border-collapse border border-gray-600 bg-gray-700 text-gray-300 mb-4">
+                                <thead class="bg-gray-900 text-gray-400">
+                                    <tr>
+                                        <th class="border p-2">Name</th>
+                                        <th class="border p-2">Datum</th>                                    
+                                    </tr>
+                                </thead>
+                                <tbody>                                
+                                    <tr>
+                                        <td class="p-2 border text-center bg-green-700" >
+                                            {{ $item->{$zuteilungNameKey} }}
+                                        </td>
+                                        <td class="p-2 border text-center" >
+                                            {{ \Carbon\Carbon::parse($item->{$zuteilungDatumKey})->format('d.m.Y') }}
+                                        </td>                                    
+                                    </tr>                                
+                                </tbody>
+                            </table>
+                        </div>                    
+                    </div>
+                @endif
+
                 {{-- PRÜFUNGEN – standardmäßig geöffnet --}}
-                <div class="p-4">
+                <div class="p-4 border-t border-gray-200">
                     <div class="flex items-center justify-between mb-2 cursor-pointer" onclick="toggleSection('pruefungen-{{ $loop->index }}')">
                         <h3 class="text-lg font-semibold text-gray-200">Vorhandene Prüfungen</h3>
                         <span class="text-gray-500 text-sm">(Klicken zum Ein-/Ausklappen)</span>

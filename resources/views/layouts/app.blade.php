@@ -9,7 +9,9 @@
 <body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col">
   <nav class="bg-gray-800 shadow p-4">
     <div class="container mx-auto flex items-center justify-between">
-      <div class="text-xl font-bold">MPFeuer-WebClient</div>
+      <div class="text-xl font-bold">
+        <a href="/" class="hover:text-blue-400 transition-colors">MPFeuer-WebClient</a>
+      </div>
       <div class="space-x-4">        
         <a href="/barcode" class="px-3 py-2 bg-blue-600 text-white rounded shadow hover:opacity-90">Barcode/NFC-Suche</a>
         <!-- weitere Menüpunkte für andere Modelle hier -->
@@ -23,7 +25,7 @@
 
   {{-- Sticky Footer --}}
   <footer class="w-full py-6 text-center text-sm text-gray-400 border-t border-gray-700">
-    <p>&copy; {{ date('Y') }} MPFeuer-Webclient. Alle Rechte vorbehalten.</p>
+    <p>&copy; {{ date('Y') }} MPFeuer-WebClient. Alle Rechte vorbehalten.</p>
   </footer>
 
 </body>
